@@ -29,6 +29,12 @@
   </properties>
 
   <dependencies>
+    <!-- export directo a Datadog por HTTP (agentless) -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-datadog</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>

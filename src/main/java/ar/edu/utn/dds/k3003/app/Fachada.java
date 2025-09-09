@@ -9,6 +9,8 @@ import ar.edu.utn.dds.k3003.model.Coleccion;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.model.PdI;
 import ar.edu.utn.dds.k3003.repository.*;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -49,6 +51,8 @@ public class Fachada implements FachadaFuente {
   }
   //Colecciones
 
+    @Timed(value = "colecciones.crear.time", description = "Tiempo en crear coleccion")
+    @Counted(value = "colecciones.crear.count", description = "Cuantas colecciones se crean")
     @Override
     @Transactional
     public ColeccionDTO agregar(ColeccionDTO dto) {
