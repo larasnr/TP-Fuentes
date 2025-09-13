@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.repository.HechoRepository;
 import ar.edu.utn.dds.k3003.repository.JpaHechoRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +17,13 @@ public class ColeccionController {
 
     private final FachadaFuente fachada;
     private final JpaHechoRepository hechos;
+    private final MeterRegistry meterRegistry;
 
     @Autowired
-    public ColeccionController(FachadaFuente fachada, JpaHechoRepository hechos) {
+    public ColeccionController(FachadaFuente fachada, JpaHechoRepository hechos, MeterRegistry meterRegistry) {
         this.fachada = fachada;
         this.hechos = hechos;
+        this.meterRegistry = meterRegistry;
     }
 
     @GetMapping("/colecciones")
@@ -36,6 +39,7 @@ public class ColeccionController {
     @PostMapping("/colecciones")
     public ResponseEntity<ColeccionDTO> crear(@RequestBody ColeccionDTO dto) {
         try {
+            meterRegistry.counter("Fuentes.POST.colecciones").increment();
             return ResponseEntity.ok(fachada.agregar(dto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(409).build(); // o body con el mensaje si los tests lo piden

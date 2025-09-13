@@ -4,6 +4,7 @@ import ar.edu.utn.dds.k3003.facades.FachadaFuente;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.repository.JpaHechoRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,15 +13,18 @@ public class HechoController {
 
     private final FachadaFuente fachada;
     private final JpaHechoRepository hechos;
+    private final MeterRegistry meterRegistry;
 
-    public HechoController(FachadaFuente fachada, JpaHechoRepository hechos) {
+    public HechoController(FachadaFuente fachada, JpaHechoRepository hechos, MeterRegistry meterRegistry) {
         this.fachada = fachada;
         this.hechos = hechos;
+        this.meterRegistry = meterRegistry;
     }
 
     @PostMapping("/hechos")
     public ResponseEntity<HechoDTO> crear(@RequestBody HechoDTO body) {
         HechoDTO creado = fachada.agregar(body);
+        meterRegistry.counter("Fuentes.POST.hechos").increment();
         return ResponseEntity.ok(creado);
     }
 
