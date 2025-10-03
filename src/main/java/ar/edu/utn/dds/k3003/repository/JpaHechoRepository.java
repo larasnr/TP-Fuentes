@@ -6,8 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface JpaHechoRepository extends JpaRepository<Hecho, String>{
     List<Hecho> findByColeccionId(String nombre);
+    // Spring genera automáticamente la query
+    boolean existsByExternalId(String externalId);
+    // si querés recuperar el hecho también:
+    Optional<Hecho> findByExternalId(String externalId);
 }

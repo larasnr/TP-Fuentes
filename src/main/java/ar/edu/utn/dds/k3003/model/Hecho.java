@@ -27,7 +27,10 @@ public class Hecho {
     private boolean censurado;
 
     @Transient
-    private final List<PdI> pdis;
+    private List<PdI> pdis;
+
+    @Transient
+    private Long pdiId;
 
     @Column(nullable = false)
     private String estado = "activo"; //para PATCH, y es interno
@@ -44,6 +47,8 @@ public class Hecho {
     private String ubicacion;
 
     private String origen;
+
+    private String externalId;
 
     public boolean estaBorrado() { return "borrado".equalsIgnoreCase(estado); }
 
@@ -71,6 +76,17 @@ public class Hecho {
         this.coleccionId = coleccionId;
         this.titulo = titulo;
         this.pdis = pdis;
+    }
+    public Hecho(Long pdiId) {
+        this.pdiId = pdiId;
+    }
+
+    public Long getPdiId() {
+        return pdiId;
+    }
+
+    public void setPdiId(Long pdiId) {
+        this.pdiId = pdiId;
     }
 
     public void censurar() {
@@ -175,4 +191,12 @@ public class Hecho {
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
+
+    public String getExternalId() {
+        return externalId;
+    }
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 }
+

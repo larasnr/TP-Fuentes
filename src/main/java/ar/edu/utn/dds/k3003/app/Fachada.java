@@ -1,6 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
-import ar.edu.utn.dds.k3003.facades.FachadaFuente;
+import ar.edu.utn.dds.k3003.dto.MensajeDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
@@ -8,11 +8,9 @@ import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.Coleccion;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.model.PdI;
+import ar.edu.utn.dds.k3003.model.mensajeria.MensajeHecho;
 import ar.edu.utn.dds.k3003.repository.*;
-import io.micrometer.core.annotation.Counted;
-import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.datadog.DatadogMeterRegistry;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -31,6 +29,7 @@ public class Fachada implements FachadaFuente {
   private JpaHechoRepository hechos;
   private FachadaProcesadorPdI procesadorPdI;
   private MeterRegistry meterRegistry;
+
  @Autowired // así spring usa este constructor y no el vacío del Evaluador
   public Fachada(JpaColeccionRepository colecciones, JpaHechoRepository hechos) {
     this.colecciones = colecciones;
@@ -204,4 +203,59 @@ public class Fachada implements FachadaFuente {
 
     return resultado;
   }
+    @Transactional
+    @Override
+    public MensajeDTO onMessage(MensajeHecho m) {
+        if (m == null) return null;
+
+        // Idempotencia
+        if (m.getExternalId() == null || m.getExternalId().isBlank()) {
+            throw new IllegalArgumentException("externalId requerido");
+        }
+        if (hechos.existsByExternalId(m.getExternalId())) {
+            throw new IllegalArgumentException("Ya existe el hecho. No se va a crear?");
+        }
+
+        String coleccionNombre = m.getColeccionNombre();
+        /*
+        String coleccionKey;
+        if (m.getColeccionNombre() != null && !m.getColeccionNombre().isBlank()) {
+            coleccionKey = m.getColeccionNombre();
+        } else {
+            coleccionKey = null;
+            throw new IllegalArgumentException("Falta coleccion en mensaje");
+        }*/
+
+        /* 2) Buscar o crear la colección
+        Coleccion cole = colecciones.findById(coleccionNombre).orElseGet(() -> {
+            Coleccion c = new Coleccion();
+            c.setNombre(coleccionNombre);
+            c.setDescripcion("Creada por mensajería");
+            c.setFechaModificacion(java.time.LocalDateTime.now());
+            return colecciones.save(c);
+        });*/
+
+        Coleccion cole = colecciones.findById(coleccionNombre)
+                .orElseThrow(() -> new NoSuchElementException("No existe la colección: " + coleccionNombre));
+
+        Hecho h = m.toHecho();
+        h.setColeccionId(cole.getNombre());
+        hechos.save(h);
+
+        if (m.getImageUrl() != null && !m.getImageUrl().isBlank()) {
+            //TODO Se procesa
+        }
+
+        MensajeDTO dto = new MensajeDTO();
+        dto.setVersion(m.getVersion());
+        dto.setExternalId(m.getExternalId());
+        dto.setTitulo(m.getTitulo());
+        dto.setDescripcion(m.getDescripcion());
+        dto.setImageUrl(m.getImageUrl());
+        dto.setOrigen(m.getOrigen());
+        if(m.getFecha() != null) {
+            dto.setFecha(m.getFecha().toString());
+        }
+        return dto;
+    }
 }

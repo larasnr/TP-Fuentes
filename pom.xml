@@ -75,7 +75,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <scope>test</scope>
+      <!--<scope>test</scope>-->
     </dependency>
 
     <!-- Existing Dependencies -->
@@ -93,6 +93,13 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
+    <dependency>
+      <groupId>com.rabbitmq</groupId>
+      <artifactId>amqp-client</artifactId>
+      <version>5.26.0</version>
     </dependency>
 
     <dependency>
