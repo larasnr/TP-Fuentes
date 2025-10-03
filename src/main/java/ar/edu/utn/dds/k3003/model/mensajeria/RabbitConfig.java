@@ -15,13 +15,21 @@ public class RabbitConfig {
     @Bean
     @Primary
     @Conditional(HasAmqpUri.class)
-    public MensajeriaBroker rabbitBus(
+    /*public MensajeriaBroker rabbitBus(
             @Value("${amqp.uri:${RMQ_AMQP_URI}}") String uri,
             @Value("${amqp.exchange:fuentes.exchange}") String exchange) {
         if (uri == null || uri.isBlank()) {
             throw new IllegalStateException("Falta amqp.uri/AMQP_URI (amqps://USER:PASS@HOST/VHOST)");
         }
         return new RabbitMqAdapter(uri, exchange);
+    }*/
+    public MensajeriaBroker rabbitBus(
+            @Value("${amqp.uri:${RMQ_AMQP_URI}}") String uri,
+            @Value("${amqp.exchange:fuentes.exchange}") String exchange,
+            @Value("${mensajeria.queue:}") String queueOpt
+    ) {
+        String q = (queueOpt == null || queueOpt.isBlank()) ? null : queueOpt;
+        return new RabbitMqAdapter(uri, exchange, q);
     }
 
     static class HasAmqpUri implements Condition {
