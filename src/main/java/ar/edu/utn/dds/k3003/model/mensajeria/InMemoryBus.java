@@ -12,8 +12,14 @@ public class InMemoryBus implements MensajeriaBroker {
         });
     }
 
-    public void suscribir(String topic, MensajeriaHandler handler) {
+    public String suscribir(String topic, MensajeriaHandler handler) {
         subs.computeIfAbsent(topic, t -> new CopyOnWriteArrayList<>()).add(handler);
+        return null;
+    }
+
+    @Override
+    public void cancelar(String consumerTag) throws Exception {
+
     }
 }
 
