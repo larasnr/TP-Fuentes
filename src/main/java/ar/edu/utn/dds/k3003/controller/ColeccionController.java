@@ -2,7 +2,7 @@ package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.FachadaFuente;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dto.HechoDTO;
 import ar.edu.utn.dds.k3003.repository.HechoRepository;
 import ar.edu.utn.dds.k3003.repository.JpaHechoRepository;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -53,7 +53,11 @@ public class ColeccionController {
                 .map(h -> new HechoDTO(
                         h.getId(), h.getColeccionId(), h.getTitulo(),
                         h.getEtiquetas(), h.getCategoria(), h.getUbicacion(),
-                        h.getFecha(), h.getOrigen()
+                        h.getFecha(), h.getOrigen(),
+                        h.getDescripcion(),
+                        (h.getEstado() == null || h.getEstado().isBlank())
+                                ? "activo"
+                                : h.getEstado()
                 ))
                 .toList();
         return ResponseEntity.ok(lista);

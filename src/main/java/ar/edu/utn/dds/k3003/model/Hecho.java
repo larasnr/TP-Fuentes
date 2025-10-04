@@ -3,7 +3,9 @@ package ar.edu.utn.dds.k3003.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ar.edu.utn.dds.k3003.facades.dtos.CategoriaHechoEnum;
 import jakarta.persistence.*;
@@ -26,11 +28,12 @@ public class Hecho {
 
     private boolean censurado;
 
+    @ElementCollection
+    private List<String> listaPdI= new ArrayList<>();
+
+    //Se tiene que eliminar
     @Transient
     private List<PdI> pdis;
-
-    @Transient
-    private Long pdiId;
 
     @Column(nullable = false)
     private String estado = "activo"; //para PATCH, y es interno
@@ -77,17 +80,6 @@ public class Hecho {
         this.titulo = titulo;
         this.pdis = pdis;
     }
-    public Hecho(Long pdiId) {
-        this.pdiId = pdiId;
-    }
-
-    public Long getPdiId() {
-        return pdiId;
-    }
-
-    public void setPdiId(Long pdiId) {
-        this.pdiId = pdiId;
-    }
 
     public void censurar() {
         this.censurado = true;
@@ -98,6 +90,12 @@ public class Hecho {
             throw new IllegalArgumentException("No se puede agregar una PdI nula.");
         }
         this.pdis.add(pdi);
+    }
+    public void agregarPdI(String pdi) {
+        if (pdi == null) {
+            throw new IllegalArgumentException("No se puede agregar una PdI nula.");
+        }
+        this.listaPdI.add(pdi);
     }
 
     public String getId() {
@@ -197,6 +195,10 @@ public class Hecho {
     }
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    public List<String> getListaPdI() {
+        return listaPdI;
     }
 }
 
