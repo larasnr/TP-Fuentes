@@ -102,7 +102,7 @@ public class Fachada implements FachadaFuente {
     if (hechoDTO.fecha() != null) h.setFecha(hechoDTO.fecha());
     else h.setFecha(LocalDateTime.now());
     if (hechoDTO.origen() != null) h.setOrigen(hechoDTO.origen());
-    if(hechoDTO.destino() != null)h.setEstado(hechoDTO.destino());
+    if(hechoDTO.estado() != null)h.setEstado(hechoDTO.estado());
     else h.setEstado("activo");
 
     Hecho guardado = hechos.save(h);

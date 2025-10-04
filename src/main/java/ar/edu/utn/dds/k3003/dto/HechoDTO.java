@@ -5,12 +5,12 @@ import ar.edu.utn.dds.k3003.facades.dtos.CategoriaHechoEnum;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record HechoDTO(String id, String nombreColeccion, String titulo, List<String> etiquetas, CategoriaHechoEnum categoria, String ubicacion, LocalDateTime fecha, String origen, String destino) {
+public record HechoDTO(String id, String nombreColeccion, String titulo, List<String> etiquetas, CategoriaHechoEnum categoria, String ubicacion, LocalDateTime fecha, String origen, String estado) {
     public HechoDTO(String id, String nombreColeccion, String titulo) {
         this(id, nombreColeccion, titulo, (List)null, (CategoriaHechoEnum)null, (String)null, (LocalDateTime)null, (String)null, (String)null);
     }
 
-    public HechoDTO(String id, String nombreColeccion, String titulo, List<String> etiquetas, CategoriaHechoEnum categoria, String ubicacion, LocalDateTime fecha, String origen, String destino) {
+    public HechoDTO(String id, String nombreColeccion, String titulo, List<String> etiquetas, CategoriaHechoEnum categoria, String ubicacion, LocalDateTime fecha, String origen, String estado) {
         this.id = id;
         this.nombreColeccion = nombreColeccion;
         this.titulo = titulo;
@@ -19,7 +19,7 @@ public record HechoDTO(String id, String nombreColeccion, String titulo, List<St
         this.ubicacion = ubicacion;
         this.fecha = fecha;
         this.origen = origen;
-        this.destino = destino;
+        this.estado = estado;
     }
 
     public String id() {
