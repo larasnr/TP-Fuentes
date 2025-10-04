@@ -3,7 +3,7 @@ package ar.edu.utn.dds.k3003.app;
 import ar.edu.utn.dds.k3003.dto.MensajeDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dto.HechoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.Coleccion;
 import ar.edu.utn.dds.k3003.model.Hecho;
@@ -102,6 +102,8 @@ public class Fachada implements FachadaFuente {
     if (hechoDTO.fecha() != null) h.setFecha(hechoDTO.fecha());
     else h.setFecha(LocalDateTime.now());
     if (hechoDTO.origen() != null) h.setOrigen(hechoDTO.origen());
+    if(hechoDTO.destino() != null)h.setEstado(hechoDTO.destino());
+    else h.setEstado("activo");
 
     Hecho guardado = hechos.save(h);
 
@@ -113,7 +115,8 @@ public class Fachada implements FachadaFuente {
             guardado.getCategoria(),
             guardado.getUbicacion(),
             guardado.getFecha(),
-            guardado.getOrigen()
+            guardado.getOrigen(),
+            guardado.getEstado()
     );
   }
 
@@ -130,7 +133,8 @@ public class Fachada implements FachadaFuente {
             h.getCategoria(),
             h.getUbicacion(),
             h.getFecha(),
-            h.getOrigen()
+            h.getOrigen(),
+            h.getEstado()
     );
   }
 
@@ -150,7 +154,8 @@ public class Fachada implements FachadaFuente {
                     h.getCategoria(),
                     h.getUbicacion(),
                     h.getFecha(),
-                    h.getOrigen()
+                    h.getOrigen(),
+                    h.getEstado()
             ))
             .collect(Collectors.toList());
   }

@@ -1,7 +1,7 @@
 package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.FachadaFuente;
-import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dto.HechoDTO;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.repository.JpaHechoRepository;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -49,7 +49,8 @@ public class HechoController {
                 saved.getCategoria(),
                 saved.getUbicacion(),
                 saved.getFecha(),
-                saved.getOrigen()
+                saved.getOrigen(),
+                saved.getEstado()
         );
         return ResponseEntity.ok(dto);
     }
