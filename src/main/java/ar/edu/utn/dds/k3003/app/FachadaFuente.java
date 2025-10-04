@@ -3,7 +3,7 @@ package ar.edu.utn.dds.k3003.app;
 import ar.edu.utn.dds.k3003.dto.MensajeDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
-import ar.edu.utn.dds.k3003.dto.HechoDTO;
+import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.mensajeria.MensajeHecho;
 

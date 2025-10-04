@@ -3,7 +3,7 @@ package ar.edu.utn.dds.k3003.app;
 import ar.edu.utn.dds.k3003.dto.MensajeDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
-import ar.edu.utn.dds.k3003.dto.HechoDTO;
+import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.Coleccion;
 import ar.edu.utn.dds.k3003.model.Hecho;
@@ -13,7 +13,6 @@ import ar.edu.utn.dds.k3003.repository.*;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,7 @@ import java.util.stream.Collectors;
 public class Fachada implements FachadaFuente {
   private JpaColeccionRepository colecciones;
   private JpaHechoRepository hechos;
-  private FachadaProcesadorPdI procesadorPdI; //TODO sacar
-  @Value("${pdi.url}") private String pdiUrl;
+  private FachadaProcesadorPdI procesadorPdI;
   private MeterRegistry meterRegistry;
 
  @Autowired // así spring usa este constructor y no el vacío del Evaluador
@@ -104,8 +102,6 @@ public class Fachada implements FachadaFuente {
     if (hechoDTO.fecha() != null) h.setFecha(hechoDTO.fecha());
     else h.setFecha(LocalDateTime.now());
     if (hechoDTO.origen() != null) h.setOrigen(hechoDTO.origen());
-    if (hechoDTO.estado() != null) h.setEstado(hechoDTO.estado());
-    else h.setEstado("activo");
 
     Hecho guardado = hechos.save(h);
 
@@ -117,9 +113,7 @@ public class Fachada implements FachadaFuente {
             guardado.getCategoria(),
             guardado.getUbicacion(),
             guardado.getFecha(),
-            guardado.getOrigen(),
-            guardado.getDescripcion(),
-            guardado.getEstado()
+            guardado.getOrigen()
     );
   }
 
@@ -136,9 +130,7 @@ public class Fachada implements FachadaFuente {
             h.getCategoria(),
             h.getUbicacion(),
             h.getFecha(),
-            h.getOrigen(),
-            h.getDescripcion(),
-            h.getEstado()
+            h.getOrigen()
     );
   }
 
@@ -158,9 +150,7 @@ public class Fachada implements FachadaFuente {
                     h.getCategoria(),
                     h.getUbicacion(),
                     h.getFecha(),
-                    h.getOrigen(),
-                    h.getDescripcion(),
-                    h.getEstado()
+                    h.getOrigen()
             ))
             .collect(Collectors.toList());
   }
@@ -180,7 +170,7 @@ public class Fachada implements FachadaFuente {
   public void setProcesadorPdI(FachadaProcesadorPdI procesador) {
     this.procesadorPdI = procesador;
   }
-/*
+
   @Override
   public PdIDTO agregar(PdIDTO pdIDTO) throws IllegalStateException {
     if (this.procesadorPdI == null) {
@@ -213,41 +203,6 @@ public class Fachada implements FachadaFuente {
 
     return resultado;
   }
-*/ //TODO
-    @Override
-    public PdIDTO agregar(PdIDTO pdIDTO) throws IllegalStateException {
-
-        String hechoId = pdIDTO.hechoId();
-        Hecho hecho = hechos.findById(hechoId)
-                .orElseThrow(() -> new IllegalStateException("No existe el hecho con ID: " + hechoId));
-
-        if (hecho.isCensurado()) {
-            throw new IllegalStateException("El hecho está censurado, no se le puede agregar PdI.");
-        }
-
-        if (hecho.estaBorrado()) {
-            throw new IllegalStateException("El hecho está borrado, no se le puede agregar PdI.");
-        }
-
-        //PdIDTO resultado = procesadorPdI.procesar(pdIDTO);
-                    /*PdI pdi = new PdI();
-            PdIDTO r = pdi.crearPdi(dto.hechoId(),dto.contenido(),pdiUrl);
-            pdi.setId(r.id());
-            pdi.setContenido(r.contenido());
-            */
-
-        PdI pdi = new PdI();
-        PdIDTO resultado = pdi.crearPdi(pdIDTO.hechoId(),pdIDTO.contenido(),pdiUrl);
-
-        pdi.setId(resultado.id());
-        pdi.setContenido(resultado.contenido());
-        pdi.setHechoId(hechoId);
-
-        hecho.agregarPdI(resultado.id());
-        hechos.save(hecho);
-
-        return resultado;
-    }
     @Transactional
     @Override
     public MensajeDTO onMessage(MensajeHecho m) {
