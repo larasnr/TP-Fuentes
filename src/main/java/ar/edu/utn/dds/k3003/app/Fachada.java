@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +27,7 @@ import java.util.stream.Collectors;
 public class Fachada implements FachadaFuente {
   private JpaColeccionRepository colecciones;
   private JpaHechoRepository hechos;
-  private FachadaPdI procesadorPdI = new FachadaPdI("https://dise-o2a.onrender.com/");
+  private FachadaPdI procesadorPdI = new FachadaPdI("https://diseno-entrega.onrender.com");
   private MeterRegistry meterRegistry;
 
  @Autowired // así spring usa este constructor y no el vacío del Evaluador
@@ -281,6 +278,11 @@ public class Fachada implements FachadaFuente {
         if(m.getFecha() != null) {
             dto.setFecha(m.getFecha().toString());
         }
+
+        HechoDTO hechoDTO = new HechoDTO
+                (h.getColeccionId(),h.getColeccionId(),h.getTitulo());
+        this.agregarMongoDB(hechoDTO);
+
         return dto;
     }
 
