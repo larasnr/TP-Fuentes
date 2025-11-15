@@ -280,7 +280,7 @@ public class Fachada implements FachadaFuente {
         }
 
         HechoDTO hechoDTO = new HechoDTO
-                (h.getColeccionId(),h.getColeccionId()
+                (h.getId(),h.getColeccionId()
                         ,h.getTitulo(),h.getEtiquetas(),h.getCategoria()
                         ,h.getUbicacion(),h.getFecha(),h.getOrigen(),"activo");
         this.agregarMongoDB(hechoDTO);

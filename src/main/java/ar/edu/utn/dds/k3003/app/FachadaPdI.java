@@ -21,7 +21,7 @@ public class FachadaPdI implements FachadaProcesadorPdI {
     }
     @Override
     public PdIDTO procesar(PdIDTO pdIDTO) throws IllegalStateException {
-        WebClient pdiClient = WebClient.builder().baseUrl(this.url).build();
+        WebClient pdiClient = WebClient.builder().baseUrl("https://diseno-entrega.onrender.com").build();
         Map<String, Object> body = Map.of(
                 "id", pdIDTO.id(),
                 "hechoId", pdIDTO.hechoId(),
