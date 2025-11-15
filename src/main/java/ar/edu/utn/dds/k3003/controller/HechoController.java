@@ -24,6 +24,7 @@ public class HechoController {
     @PostMapping("/hechos")
     public ResponseEntity<HechoDTO> crear(@RequestBody HechoDTO body) {
         HechoDTO creado = fachada.agregar(body);
+        fachada.agregarMongoDB(creado);
         meterRegistry.counter("Fuentes.POST.hechos").increment();
         return ResponseEntity.ok(creado);
     }

@@ -1,10 +1,9 @@
 package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.dto.MensajeDTO;
-import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
+import ar. edu. utn. dds. k3003.dto. PdIDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
 import ar.edu.utn.dds.k3003.dto.HechoDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.Coleccion;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.model.PdI;
@@ -15,10 +14,13 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 public class Fachada implements FachadaFuente {
   private JpaColeccionRepository colecciones;
   private JpaHechoRepository hechos;
-  private FachadaProcesadorPdI procesadorPdI;
+  private FachadaPdI procesadorPdI = new FachadaPdI("https://dise-o2a.onrender.com/");
   private MeterRegistry meterRegistry;
 
  @Autowired // así spring usa este constructor y no el vacío del Evaluador
@@ -120,8 +122,7 @@ public class Fachada implements FachadaFuente {
     );
   }
 
-
-  @Override
+    @Override
   public HechoDTO buscarHechoXId(String hechoId) throws NoSuchElementException {
       Hecho h = hechos.findById(hechoId)
               .orElseThrow(NoSuchElementException::new);
@@ -171,12 +172,16 @@ public class Fachada implements FachadaFuente {
 
   //PdI
 
-  @Override
+  /*@Override
   public void setProcesadorPdI(FachadaProcesadorPdI procesador) {
+    this.procesadorPdI = procesador;
+  }*/
+
+  @Override
+  public void setProcesadorPdI(FachadaPdI procesador) {
     this.procesadorPdI = procesador;
   }
 
-  @Override
   public PdIDTO agregar(PdIDTO pdIDTO) throws IllegalStateException {
     if (this.procesadorPdI == null) {
       throw new IllegalStateException("No se ha configurado el ProcesadorPdI.");
@@ -203,7 +208,10 @@ public class Fachada implements FachadaFuente {
             resultado.etiquetas(),
             true
     );
+
     hecho.agregarPdI(pdiModel);
+
+    hecho.agregarPdI(resultado.id());
     hechos.save(hecho);
 
     return resultado;
@@ -248,7 +256,18 @@ public class Fachada implements FachadaFuente {
         hechos.save(h);
 
         if (m.getImageUrl() != null && !m.getImageUrl().isBlank()) {
-            //TODO Se procesa
+            try{
+                //TODO Se procesa
+                PdIDTO pdIDTO = new PdIDTO(null,h.getId()
+                        ,h.getDescripcion()
+                        ,h.getUbicacion()
+                        ,LocalDateTime.now()
+                        ,null
+                        ,h.getEtiquetas()
+                        ,h.getDescripcion());
+                this.agregar(pdIDTO);
+            }
+            catch(Exception ignored){}
         }
 
         MensajeDTO dto = new MensajeDTO();
@@ -262,5 +281,28 @@ public class Fachada implements FachadaFuente {
             dto.setFecha(m.getFecha().toString());
         }
         return dto;
+    }
+
+    @Override
+    public void agregarMongoDB(HechoDTO hechoDTO) throws IllegalStateException {
+        WebClient pdiClient = WebClient.builder().baseUrl("https://search-service-ft8x.onrender.com").build();
+        Map<String, Object> body = Map.of(
+                "hechoId",hechoDTO.id(),
+                "nombre",hechoDTO.titulo(),
+                "descripcionHecho",null,
+                "contenidoPdis",null,
+                "tags",null,
+                "estado","activo",
+                "coleccion",hechoDTO.nombreColeccion(),
+                "urlImagenPrincipal",null
+        );
+
+        pdiClient.post()
+                .uri("/search/index")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
     }
 }
