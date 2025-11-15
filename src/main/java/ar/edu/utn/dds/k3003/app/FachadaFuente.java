@@ -4,7 +4,7 @@ import ar.edu.utn.dds.k3003.dto.MensajeDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
 import ar.edu.utn.dds.k3003.dto.HechoDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
+import ar.edu.utn.dds.k3003.dto.PdIDTO;
 import ar.edu.utn.dds.k3003.model.mensajeria.MensajeHecho;
 
 import java.util.List;
@@ -17,15 +17,21 @@ public interface FachadaFuente {
 
     HechoDTO agregar(HechoDTO var1);
 
+    void agregarMongoDB(HechoDTO var1);
+
     HechoDTO buscarHechoXId(String var1) throws NoSuchElementException;
 
     List<HechoDTO> buscarHechosXColeccion(String var1) throws NoSuchElementException;
 
-    void setProcesadorPdI(FachadaProcesadorPdI var1);
+    //void setProcesadorPdI(FachadaProcesadorPdI var1);
+    void setProcesadorPdI(FachadaPdI var1);
 
+    //PdIDTO agregar(PdIDTO var1) throws IllegalStateException;
     PdIDTO agregar(PdIDTO var1) throws IllegalStateException;
 
     List<ColeccionDTO> colecciones();
 
     public MensajeDTO onMessage(MensajeHecho m);
+
+    void patchMongoDB(HechoDTO hechoDTO);
 }

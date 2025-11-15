@@ -26,6 +26,9 @@ public class Hecho {
 
     private boolean censurado;
 
+    @ElementCollection
+    private List<String> pdiIds;
+
     @Transient
     private List<PdI> pdis;
 
@@ -98,6 +101,13 @@ public class Hecho {
             throw new IllegalArgumentException("No se puede agregar una PdI nula.");
         }
         this.pdis.add(pdi);
+    }
+
+    public void agregarPdI(String pdi) {
+        if (pdiIds == null) {
+            pdiIds = new ArrayList<>();
+        }
+        this.pdiIds.add(pdi);
     }
 
     public String getId() {
