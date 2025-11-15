@@ -53,6 +53,9 @@ public class HechoController {
                 saved.getOrigen(),
                 saved.getEstado()
         );
+
+        fachada.patchMongoDB(dto);
+
         return ResponseEntity.ok(dto);
     }
 

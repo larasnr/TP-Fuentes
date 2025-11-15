@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -289,12 +290,12 @@ public class Fachada implements FachadaFuente {
         Map<String, Object> body = Map.of(
                 "hechoId",hechoDTO.id(),
                 "nombre",hechoDTO.titulo(),
-                "descripcionHecho",null,
-                "contenidoPdis",null,
-                "tags",null,
+                "descripcionHecho","",
+                "contenidoPdis","",
+                "tags", List.of(),
                 "estado","activo",
                 "coleccion",hechoDTO.nombreColeccion(),
-                "urlImagenPrincipal",null
+                "urlImagenPrincipal",""
         );
 
         pdiClient.post()
@@ -305,4 +306,22 @@ public class Fachada implements FachadaFuente {
                 .bodyToMono(Map.class)
                 .block();
     }
+
+    @Override
+    public void patchMongoDB(HechoDTO hechoDTO) throws IllegalStateException {
+        WebClient pdiClient = WebClient.builder().baseUrl("https://search-service-ft8x.onrender.com").build();
+        Map<String, Object> body = Map.of(
+                "estado", hechoDTO.estado()
+        );
+
+        pdiClient.patch()
+                .uri("/search/"+hechoDTO.id()+"/estado")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+    }
+
+
 }

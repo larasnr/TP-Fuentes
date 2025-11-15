@@ -32,4 +32,6 @@ public interface FachadaFuente {
     List<ColeccionDTO> colecciones();
 
     public MensajeDTO onMessage(MensajeHecho m);
+
+    void patchMongoDB(HechoDTO hechoDTO);
 }
